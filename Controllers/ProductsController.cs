@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FirstApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FirstApi.Controllers
 {
@@ -19,10 +20,18 @@ namespace FirstApi.Controllers
             _context.Database.EnsureCreated();
         }
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetAllProducts()
+        public async Task<ActionResult> GetAllProducts()
         {
-            var products = _context.Products.ToList();
+            var products = await _context.Products.ToListAsync();
             return Ok(products);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return Ok(product);
         }
     }
 }
